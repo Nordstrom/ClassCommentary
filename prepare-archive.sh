@@ -5,7 +5,11 @@ git config --global user.email $GIT_AUTHOR_EMAIL
 # Checkout Repo to deploy to
 echo "\n1. Checkout Repo to deploy to"
 cd /tmp
+
+# CLeanup tmp directory
 rm -rf clonedir
+rm -rf ${GH_PROJECT_NAME}
+
 git clone https://${GH_OAUTH_TOKEN}@github.com/${GH_USER_NAME}/${GH_REPO_NAME} clonedir
 cd clonedir
 git reset
@@ -14,23 +18,24 @@ git pull https://${GH_OAUTH_TOKEN}@github.com/${GH_USER_NAME}/${GH_REPO_NAME}
 # Create Directories for zip
 echo "\n 2. Create Directories for zip"
 cd /tmp
-mkdir ${GH_PROJECT_NAME}
-mkdir ${GH_PROJECT_NAME}/libs
+mkdir -p /tmp/${GH_PROJECT_NAME}/libs
 
 # Take a look.
 echo "\n 3. Take a look."
+cd /tmp
 ls $TRAVIS_BUILD_DIR/build/libs
-ls $TRAVIS_BUILD_DIR/libs/*.jar
+ls -la $TRAVIS_BUILD_DIR/libs/*.jar
 
 # copy jars to directory
 echo "\n 4. copy jars to directory."
-
-cp -R $TRAVIS_BUILD_DIR/build/libs* ${GH_PROJECT_NAME}/libs/
-cp -R $TRAVIS_BUILD_DIR/libs/*.jar ${GH_PROJECT_NAME}/libs/
+cp -R $TRAVIS_BUILD_DIR/build/libs* /tmp/${GH_PROJECT_NAME}/libs/
+cp -R $TRAVIS_BUILD_DIR/libs/*.jar /tmp/${GH_PROJECT_NAME}/libs/
 
 # Take a look in our zip directory
 echo "\n 5. Take a look in our zip directory:"
-ls ${GH_PROJECT_NAME}/libs/
+ls -la /tmp/${GH_PROJECT_NAME}/libs/
+ls -la /tmp/${GH_PROJECT_NAME}/libs/libs
+ls -la /tmp
 
 # Zip it
 echo "\n 6. Zip it:"
@@ -46,7 +51,7 @@ cp ${GH_PROJECT_NAME}.zip .
 
 # Take a look.
 echo "\n 9. Take a look."
-ls
+ls -la
 
 # Add, commit, and push
 echo "\n 10. Add, commit, and push:"
