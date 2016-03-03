@@ -51,7 +51,7 @@ fi
 
 # Copy the new zip to the clone of the repo
 echo "  8. Copy the new zip to the clone of the repo:"
-cp /tmp/clonedir/${GH_PROJECT_NAME}.zip /tmp/clonedir/
+cp /tmp/${GH_PROJECT_NAME}.zip /tmp/clonedir/
 
 # Go to clone we created earlier.
 echo "  9. Go to clone we created earlier.:"
