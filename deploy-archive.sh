@@ -33,7 +33,8 @@ ls -la /tmp/${GH_PROJECT_NAME}/libs/
 
 # Zip it UP!
 echo "  6. Zip it:"
-zip /tmp/${GH_PROJECT_NAME}.zip /tmp/${GH_PROJECT_NAME}
+cd /tmp
+zip ${GH_PROJECT_NAME}.zip /tmp/${GH_PROJECT_NAME}/*
 
 # Take a look AT ZIP
 echo "  7. Take a look at the zip"
@@ -51,7 +52,7 @@ fi
 
 # Copy the new zip to the clone of the repo
 echo "  8. Copy the new zip to the clone of the repo:"
-cp /tmp/${GH_PROJECT_NAME}.zip /tmp/clonedir/
+cp /tmp /${GH_PROJECT_NAME}.zip /tmp/clonedir/
 
 # Go to clone we created earlier.
 echo "  9. Go to clone we created earlier.:"
