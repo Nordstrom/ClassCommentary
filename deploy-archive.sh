@@ -4,13 +4,14 @@ git config --global user.name $GIT_AUTHOR_NAME
 git config --global user.email $GIT_AUTHOR_EMAIL
 
 # Checkout Repo to deploy to
-echo "  1. Checkout Repo to deploy to"
+echo "  1. Checkout Repo to deploy to "
 
 # Cleanup tmp directory
 rm -rf /tmp/clonedir
 rm -rf /tmp/${GH_PROJECT_NAME}
 
-git clone https://${GH_OAUTH_TOKEN}@${GH_REF} /tmp/clonedir
+cd /tmp
+git clone https://${GH_OAUTH_TOKEN}@${GH_REF} clonedir
 
 # Create Directories for zip
 echo "  2. Create Directories for zip"
