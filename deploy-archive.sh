@@ -9,6 +9,7 @@ echo "  1. Checkout Repo to deploy to "
 # Cleanup tmp directory
 rm -rf /tmp/clonedir
 rm -rf /tmp/${GH_PROJECT_NAME}
+rm /tmp/${GH_PROJECT_NAME}.zip
 
 cd /tmp
 git clone https://${GH_OAUTH_TOKEN}@${GH_REF} clonedir
@@ -61,6 +62,7 @@ ls -la
 
 # Add, commit, and push
 echo "  11. Add, commit, and push:"
+pwd
 git add ${GH_PROJECT_NAME}.zip
 git commit -a -m "Committed by Travis-CI"
 git push https://${GH_OAUTH_TOKEN}@${GH_REF} 2>&1
