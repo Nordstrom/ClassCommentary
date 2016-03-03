@@ -34,7 +34,7 @@ ls -la /tmp/${GH_PROJECT_NAME}/libs/
 # Zip it UP!
 echo "  6. Zip it:"
 cd /tmp
-zip ${GH_PROJECT_NAME}.zip /tmp/${GH_PROJECT_NAME}
+zip ${GH_PROJECT_NAME}.zip ${GH_PROJECT_NAME}
 
 # Take a look AT ZIP
 echo "  7. Take a look at the zip"
