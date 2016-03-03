@@ -48,7 +48,7 @@ fi
 
 # Copy the new zip to the clone of the repo
 echo "  8. Copy the new zip to the clone of the repo:"
-cp /tmp/${GH_PROJECT_NAME}.zip .
+cp /tmp/clonedir/${GH_PROJECT_NAME}.zip /tmp/clonedir/
 
 # Go to clone we created earlier.
 echo "  9. Go to clone we created earlier.:"
@@ -56,10 +56,9 @@ cd /tmp/clonedir
 
 # Take a look.
 echo "  10. Take a look."
-ls -la /tmp/
+ls -la
 
 # Add, commit, and push
-cd /tmp/clonedir
 echo "  11. Add, commit, and push:"
 git add ${GH_PROJECT_NAME}.zip
 git commit -a -m "Committed by Travis-CI"
