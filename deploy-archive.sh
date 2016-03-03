@@ -7,9 +7,10 @@ git config --global user.email $GIT_AUTHOR_EMAIL
 echo "  1. Checkout Repo to deploy to "
 
 # Cleanup tmp directory
-rm -rf /tmp/clonedir
-rm -rf /tmp/${GH_PROJECT_NAME}
-rm /tmp/${GH_PROJECT_NAME}.zip
+cd /tmp
+rm -rf clonedir
+rm -rf ${GH_PROJECT_NAME}
+rm ${GH_PROJECT_NAME}.zip
 
 cd /tmp
 git clone https://${GH_OAUTH_TOKEN}@${GH_REF} clonedir
@@ -19,8 +20,8 @@ echo "  2. Create Directories for zip"
 mkdir -p /tmp/${GH_PROJECT_NAME}/libs
 
 # Take a look.
-echo "  3. Take a look for the jar file"
-ls $TRAVIS_BUILD_DIR/build/libs
+echo "  3. Take a look for the jar files"
+ls -la $TRAVIS_BUILD_DIR/build/libs
 
 # copy jars to directory
 echo " 4. copy jars to directory."
