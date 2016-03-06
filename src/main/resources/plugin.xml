@@ -5,13 +5,11 @@
   <vendor email="phil@philipleder.com" url="http://philipleder.com">Phil Leder</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      PainPoints.
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      First Release
     ]]>
   </change-notes>
 
@@ -22,7 +20,6 @@
        on how to target different products -->
   <!-- uncomment to enable plugin in all products-->
   <depends>com.intellij.modules.lang</depends>
-
 
   <project-components>
     <component>

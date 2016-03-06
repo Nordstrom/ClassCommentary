@@ -8,6 +8,7 @@ import painpoint.decoration.PainPointPresentation;
 import painpoint.domain.painpoint.PainPointDomain;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 public class PluginDialog extends JDialog {
@@ -40,19 +41,22 @@ public class PluginDialog extends JDialog {
         JCheckBox jCheckBox = new JCheckBox();
         jCheckBox.setSelected(painPointPresentation.currentUserHasPainPoint());
         jCheckBox.setText("Pain Point");
-        jCheckBox.addActionListener(e -> {
-            JCheckBox jCheckBox1 = (JCheckBox)e.getSource();
-            boolean isSelected = jCheckBox1.isSelected();
-            Integer classId = painPointPresentation.getClassId();
-            String gitPair = painPointPresentation.getGitPairString();
-            painPointDomain.addOrUpdateForClass(classId, gitPair, isSelected);
-            try {
-                painPointDomain.getPainPointMap(true);
+        jCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JCheckBox jCheckBox1 = (JCheckBox)e.getSource();
+                boolean isSelected = jCheckBox1.isSelected();
+                Integer classId = painPointPresentation.getClassId();
+                String gitPair = painPointPresentation.getGitPairString();
+                painPointDomain.addOrUpdateForClass(classId, gitPair, isSelected);
+                try {
+                    painPointDomain.getPainPointMap(true);
+                }
+                catch (SQLException sqlEx) {
+                    System.out.println("SQLException: " + sqlEx.getMessage());
+                }
+                projectViewManager.refreshProjectView(project);
             }
-            catch (SQLException sqlEx) {
-                System.out.println("SQLException: " + sqlEx.getMessage());
-            }
-            projectViewManager.refreshProjectView(project);
         });
         cbPane.add(jCheckBox);
         messagePane.add(cbPane);
@@ -63,10 +67,13 @@ public class PluginDialog extends JDialog {
         buttonPane.add(button);
 
         // set action listener on the button
-        button.addActionListener(e -> {
-            System.out.println("disposing the window..");
-            setVisible(false);
-            dispose();
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("disposing the window..");
+                setVisible(false);
+                dispose();
+            }
         });
         getContentPane().add(buttonPane, BorderLayout.PAGE_END);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

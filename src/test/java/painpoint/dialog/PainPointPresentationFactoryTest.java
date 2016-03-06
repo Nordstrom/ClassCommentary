@@ -2,7 +2,6 @@ package painpoint.dialog;
 
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import painpoint.dialog.PainPointPresentationFactory;
 
 import static org.junit.Assert.assertEquals;
 

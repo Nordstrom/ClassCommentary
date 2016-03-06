@@ -100,7 +100,7 @@ public class PainPointPresentationFactory {
 
     public static int getTodoCount(PsiFile psiFile) {
 
-        final List<String>todoList = new ArrayList<>();
+        final List<String>todoList = new ArrayList<String>();
         psiFile.accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(PsiElement element) {
