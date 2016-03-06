@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import painpoint.component.ProjectViewManager;
 import painpoint.decoration.PainPointPresentation;
 import painpoint.domain.painpoint.PainPointDomain;
+import painpoint.domain.painpoint.model.PainPoint;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -41,21 +43,25 @@ public class PluginDialog extends JDialog {
         JCheckBox jCheckBox = new JCheckBox();
         jCheckBox.setSelected(painPointPresentation.currentUserHasPainPoint());
         jCheckBox.setText("Pain Point");
+        final PainPointPresentation fPainPointPresentation = painPointPresentation;
+        final PainPointDomain fPainPointDomain = painPointDomain;
+        final ProjectViewManager fProjectViewManager = projectViewManager;
+        final Project fProject = project;
         jCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JCheckBox jCheckBox1 = (JCheckBox)e.getSource();
                 boolean isSelected = jCheckBox1.isSelected();
-                Integer classId = painPointPresentation.getClassId();
-                String gitPair = painPointPresentation.getGitPairString();
-                painPointDomain.addOrUpdateForClass(classId, gitPair, isSelected);
+                Integer classId = fPainPointPresentation.getClassId();
+                String gitPair = fPainPointPresentation.getGitPairString();
+                fPainPointDomain.addOrUpdateForClass(classId, gitPair, isSelected);
                 try {
-                    painPointDomain.getPainPointMap(true);
+                    fPainPointDomain.getPainPointMap(true);
                 }
                 catch (SQLException sqlEx) {
                     System.out.println("SQLException: " + sqlEx.getMessage());
                 }
-                projectViewManager.refreshProjectView(project);
+                fProjectViewManager.refreshProjectView(fProject);
             }
         });
         cbPane.add(jCheckBox);

@@ -1,5 +1,6 @@
 package painpoint.component;
 
+import com.intellij.openapi.vfs.VirtualFile;
 import painpoint.decoration.DecorationToggleNotifier;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.projectView.ProjectView;
@@ -44,25 +45,34 @@ public class ProjectViewManager extends AbstractProjectComponent {
     }
 
     public void refreshProjectView(final Project project) {
-        ApplicationManager.getApplication().invokeLater(() -> {
-            final ProjectView projectView = ProjectView.getInstance(project);
-            PluginManager.getLogger().warn("[ WAT ] Refreshing Project View");
-            try {
-                mPainPointDomain.getPainPointMap(true);
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                final ProjectView projectView = ProjectView.getInstance(project);
+                PluginManager.getLogger().warn("[ WAT ] Refreshing Project View");
+                try {
+                    mPainPointDomain.getPainPointMap(true);
+                } catch (SQLException sqlEx) {
+                    PluginManager.getLogger().warn("[ WAT ] SQLException:" + sqlEx.getMessage());
+                }
+                projectView.refresh();
             }
-            catch (SQLException sqlEx) {
-                PluginManager.getLogger().warn("[ WAT ] SQLException:" + sqlEx.getMessage());
-            }
-            projectView.refresh();
         });
     }
 
     private void initBusSubstription() {
         mConnection = myProject.getMessageBus().connect();
-        mConnection.subscribe(DecorationToggleNotifier.TOGGLE_TOPIC, this::refreshProjectView);
-        mConnection.subscribe(VcsConfigurationChangeListener.BRANCHES_CHANGED, (project, vcsRoot) -> refreshProjectView(project));
+        mConnection.subscribe(DecorationToggleNotifier.TOGGLE_TOPIC, new DecorationToggleNotifier() {
+            @Override
+            public void decorationChanged(Project project) {
+                refreshProjectView(project);
+            }
+        });
+        mConnection.subscribe(VcsConfigurationChangeListener.BRANCHES_CHANGED, new VcsConfigurationChangeListener.Notification() {
+             public void execute(final Project project, final VirtualFile vcsRoot) {
+                 refreshProjectView(project);
+             }});
     }
-
     public List<PainPoint> getPainPointsForClassId(int classId) {
         return mPainPointDomain.getPainPointsForClassId(true, classId);
     }
