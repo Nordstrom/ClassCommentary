@@ -14,7 +14,6 @@ import painpoint.domain.painpoint.PainPointDomain;
 import painpoint.git.GitRunner;
 import painpoint.pairing.PairConfig;
 import painpoint.pairing.PairController;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
