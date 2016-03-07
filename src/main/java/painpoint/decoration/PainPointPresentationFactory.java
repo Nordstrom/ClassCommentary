@@ -1,4 +1,4 @@
-package painpoint.dialog;
+package painpoint.decoration;
 
 import com.intellij.ide.projectView.impl.nodes.ClassTreeNode;
 import com.intellij.openapi.project.Project;
@@ -7,8 +7,6 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.PsiCommentImpl;
 import org.apache.commons.lang.StringUtils;
 import painpoint.component.ProjectViewManager;
-import painpoint.decoration.ClassFileIdCalulator;
-import painpoint.decoration.PainPointPresentation;
 import painpoint.domain.painpoint.model.PainPoint;
 import painpoint.domain.util.DataModelUtil;
 import painpoint.git.GitRunner;
@@ -107,21 +105,15 @@ public class PainPointPresentationFactory {
                 super.visitElement(element);
 
                 if(element instanceof PsiCommentImpl) {
-
                     String commentText = element.getText();
                     if(StringUtils.containsIgnoreCase(commentText, "TODO")) {
                         todoList.add(element.getText());
+                        System.out.println("\n\n\n"+todoList.size()+" ________________________________________________"+element.getText());
                     }
                 }
 
             }
-            private boolean checkForTodo(PsiElement psiElement) {
-
-
-                return false;
-            }
-
-                });
+        });
         return todoList.size();
     }
 

@@ -4,7 +4,6 @@
 package painpoint.decoration;
 
 import com.intellij.openapi.project.Project;
-import painpoint.dialog.PainPointPresentationFactory;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ProjectViewNode;

@@ -2,6 +2,7 @@ package painpoint.dialog;
 
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import painpoint.decoration.PainPointPresentationFactory;
 
 import static org.junit.Assert.assertEquals;
 
@@ -109,5 +110,21 @@ public class PainPointPresentationFactoryTest extends LightCodeInsightFixtureTes
         // Then the result should be expectedTodoCount
         assertEquals(expectedTodoCount, todoCount);
     }
+
+    public void testGetTodoCount_ClassCommentaryClass() throws Exception {
+
+        // GIVEN a test java class with expectedTodoCount todos
+        int expectedTodoCount = 0;
+        myFixture.configureByFiles("ClassFileDecoration.java");
+        PsiFile psiTestFile = myFixture.getFile();
+
+        // WHEN getTodoCount is calculated.
+        int todoCount = PainPointPresentationFactory.getTodoCount(psiTestFile);
+
+        // Then the result should be expectedTodoCount
+        assertEquals(expectedTodoCount, todoCount);
+    }
+
+
 
 }

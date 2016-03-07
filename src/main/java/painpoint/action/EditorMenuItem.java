@@ -3,7 +3,7 @@ package painpoint.action;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import painpoint.decoration.PainPointPresentation;
-import painpoint.dialog.PainPointPresentationFactory;
+import painpoint.decoration.PainPointPresentationFactory;
 import painpoint.dialog.PluginDialog;
 import painpoint.domain.painpoint.PainPointDomain;
 import com.intellij.ide.plugins.PluginManager;

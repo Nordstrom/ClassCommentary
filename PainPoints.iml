@@ -18,7 +18,7 @@
     <output url="file://$MODULE_DIR$/build/classes/main" />
     <output-test url="file://$MODULE_DIR$/build/classes/test" />
     <annotation-paths>
-      <root url="file://$MODULE_DIR$/resources" />
+      <root url="file://$MODULE_DIR$/src/main/resources" />
     </annotation-paths>
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
