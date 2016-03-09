@@ -1,6 +1,9 @@
 buildscript {
     repositories {
         mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 
@@ -9,13 +12,12 @@ plugins {
 }
 
 group 'com.roboplugins'
-version '1.0-SNAPSHOT'
-
 apply plugin: 'java'
 apply plugin: 'idea'
-//dependencies {
+dependencies {
+
 //    testCompile group: 'junit', name: 'junit', version: '15.0.4'
-//}
+}
 
 sourceCompatibility = javaVersion
 apply plugin: "org.jetbrains.intellij"
@@ -30,7 +32,7 @@ intellij {
     publish {
         username publishUsername
         password publishPassword
-        pluginId '8142'
+        pluginId '8232'
     }
     sandboxDirectory project.rootDir.canonicalPath + "/.sandbox"
 }
@@ -82,6 +84,8 @@ def getVersionName() {
     }
     return version
 }
+
+version '1.0-SNAPSHOT' + getVersionName()
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.5'
