@@ -1,50 +1,35 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
         flatDir {
             dirs 'libs'
         }
     }
+    dependencies {
+        classpath 'gradle.plugin.org.jetbrains:gradle-intellij-plugin:0.0.43'
+    }
 }
 
 plugins {
-    id "org.jetbrains.intellij" version "0.0.42"
+    id "org.jetbrains.intellij" version "0.0.26"
 }
 
 group 'com.roboplugins'
 apply plugin: 'java'
 apply plugin: 'idea'
-dependencies {
-
-//    testCompile group: 'junit', name: 'junit', version: '15.0.4'
-}
-
-sourceCompatibility = javaVersion
 apply plugin: "org.jetbrains.intellij"
 
-intellij {
-    pluginName 'PainPoints'
-    version ideaVersion
-    downloadSources Boolean.valueOf(downloadIdeaSources)
-    // FIXME: hack to support both IDEA 15 and IDEA 16.
-    // See https://github.com/intellij-rust/intellij-rust/issues/243
-    updateSinceUntilBuild = false
-    publish {
-        username publishUsername
-        password publishPassword
-        pluginId '8232'
-    }
-    sandboxDirectory project.rootDir.canonicalPath + "/.sandbox"
-}
-
 sourceSets {
-    main.java.srcDirs += 'src/main/java'
     main {
-        java.srcDirs 'src/main/java'
-        resources.srcDirs 'resources', 'src/resources'
+        java.srcDirs mainSrc
+        resources.srcDirs 'resources', mainRes
     }
     test {
-        java.srcDir 'tests/java'
+        java.srcDir testSrc
+        resources.srcDirs 'resources', testRes
     }
 }
 
@@ -60,10 +45,26 @@ intellij {
     publish {
         username publishUsername
         password publishPassword
-        pluginId '8182'
+        pluginId '8232'
+        channel publishChannel
     }
+
     sandboxDirectory project.rootDir.canonicalPath + "/.sandbox"
 }
+
+
+idea {
+    project {
+        jdkName         = javaVersion
+        languageLevel   = javaVersion
+    }
+
+//    module {
+//        generatedSourceDirs += file('gen')
+//    }
+}
+
+
 /*
  * Gets the version name from the latest Git tag
  */
@@ -84,8 +85,6 @@ def getVersionName() {
     }
     return version
 }
-
-version '1.0-SNAPSHOT' + getVersionName()
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.5'
