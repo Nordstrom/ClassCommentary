@@ -19,7 +19,7 @@ public class PainPointFactory {
     }
 
     public static Map<Integer, PainPoint> createPainPointMap(ResultSet resultSet) throws SQLException {
-        Map<Integer, PainPoint> painPointHashMap = new HashMap<>();
+        Map<Integer, PainPoint> painPointHashMap = new HashMap<Integer, PainPoint> ();
         while (resultSet.next()) {
             PainPoint painPoint = PainPointFactory.createPainPoint(resultSet);
             Integer id = resultSet.getInt("id");
@@ -29,7 +29,7 @@ public class PainPointFactory {
     }
 
     public static List<PainPoint> createPainPoints(ResultSet resultSet) throws SQLException {
-        List<PainPoint> painPointHashMap = new ArrayList<>();
+        List<PainPoint> painPointHashMap = new ArrayList<PainPoint>();
         while (resultSet.next()) {
             PainPoint painPoint = PainPointFactory.createPainPoint(resultSet);
             painPointHashMap.add(painPoint);

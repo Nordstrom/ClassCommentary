@@ -22,7 +22,7 @@ echo "  3. Go to clone we created earlier.:"
 cd /tmp/clonedir
 
 # Add, commit, and push
-echo "  4. Add, commit, and push:"
+echo "  4  . Add, commit, and push:"
 git add *.zip
 git commit -a -m "Committed by Travis-CI"
 git push https://${GH_OAUTH_TOKEN}@${GH_REF} 2>&1

@@ -1,7 +1,7 @@
-<idea-plugin version="5">
-  <id>com.roboplugins.painpoint</id>
+<idea-plugin version="2">
+  <id>painpoint</id>
   <name>Pain Points</name>
-  <version>1.15</version>
+  <version>1.17</version>
   <vendor email="phil@philipleder.com" url="http://philipleder.com">Phil Leder</vendor>
 
   <description><![CDATA[
@@ -18,7 +18,7 @@
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
-  <!-- uncomment to enable plugin in all products-->
+  <!-- uncomment to enable plugin in all products  -->
   <depends>com.intellij.modules.lang</depends>
 
   <project-components>
@@ -28,7 +28,6 @@
   </project-components>
 
   <actions>
-    <!-- Add your actions here -->
     <action id="PainPoints.EditorMenuAction"
             class="painpoint.action.EditorMenuItem"
             text="Report Pain Point"

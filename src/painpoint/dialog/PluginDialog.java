@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import painpoint.component.ProjectViewManager;
 import painpoint.decoration.PainPointPresentation;
 import painpoint.domain.painpoint.PainPointDomain;
-import painpoint.domain.painpoint.model.PainPoint;
 
 import javax.swing.*;
 import java.awt.*;

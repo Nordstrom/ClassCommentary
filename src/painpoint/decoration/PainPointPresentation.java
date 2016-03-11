@@ -54,7 +54,7 @@ public class  PainPointPresentation {
     }
 
     public List<PainPoint> getThumbsDownList() {
-        List<PainPoint> thumbsDown = new ArrayList<>();
+        List<PainPoint> thumbsDown = new ArrayList<PainPoint>();
         for(PainPoint painPoint: mPainPoints) {
             if(painPoint.isThumbsDown()) {
                 thumbsDown.add(painPoint);

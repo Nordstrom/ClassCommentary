@@ -148,7 +148,7 @@ public class PainPointDomain {
     }
 
     private List<PainPoint> getPainPointsCacheForClassId(Integer classId) {
-        List<PainPoint> painPointList = new ArrayList<>();
+        List<PainPoint> painPointList = new ArrayList<PainPoint>();
         if(mPainPointMapCache != null) {
             Iterator it = mPainPointMapCache.entrySet().iterator();
             while (it.hasNext()) {
@@ -175,7 +175,7 @@ public class PainPointDomain {
 
     public List<PainPoint> getPainPointsForClassId(boolean queryForData, Integer classId) {
 
-        List<PainPoint> painPointList = new ArrayList<>();
+        List<PainPoint> painPointList = new ArrayList<PainPoint>();
         if(!queryForData && mPainPointMapCache != null) {
             painPointList = getPainPointsCacheForClassId(classId);
         }

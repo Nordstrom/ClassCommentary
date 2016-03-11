@@ -1,9 +1,6 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
         flatDir {
             dirs 'libs'
         }
@@ -14,7 +11,7 @@ buildscript {
 }
 
 plugins {
-    id "org.jetbrains.intellij" version "0.0.26"
+    id "org.jetbrains.intellij" version "0.0.43"
 }
 
 group 'com.roboplugins'
@@ -35,6 +32,7 @@ sourceSets {
 
 intellij {
     pluginName 'PainPoints'
+    plugins 'Plugin Development'
 
     version ideaVersion
     downloadSources Boolean.valueOf(downloadIdeaSources)
@@ -52,17 +50,23 @@ intellij {
     sandboxDirectory project.rootDir.canonicalPath + "/.sandbox"
 }
 
-
-idea {
-    project {
-        jdkName         = javaVersion
-        languageLevel   = javaVersion
-    }
-
-//    module {
-//        generatedSourceDirs += file('gen')
-//    }
+task jarSources(type:Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
 }
+assemble.dependsOn jarSources
+
+
+//idea {
+//    project {
+//        jdkName         = javaVersion
+//        languageLevel   = javaVersion
+//    }
+//
+////    module {
+////        generatedSourceDirs += file('gen')
+////    }
+//}
 
 
 /*

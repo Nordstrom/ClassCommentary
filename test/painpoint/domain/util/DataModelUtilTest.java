@@ -1,7 +1,6 @@
 package painpoint.domain.util;
 
 import org.junit.Test;
-import painpoint.domain.util.DataModelUtil;
 
 import static org.junit.Assert.*;
 
