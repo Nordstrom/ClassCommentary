@@ -15,20 +15,37 @@ plugins {
 }
 
 group 'com.roboplugins'
-apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: "org.jetbrains.intellij"
 
+apply plugin: 'java'
+
 sourceSets {
     main {
-        java.srcDirs mainSrc
-        resources.srcDirs 'resources', mainRes
+        java {
+            srcDirs 'src'
+        }
+        resources {
+            srcDirs 'resources'
+        }
     }
     test {
-        java.srcDir testSrc
-        resources.srcDirs 'resources', testRes
+        java {
+            srcDir 'test'
+        }
+        resources {
+            srcDirs 'test/resources'
+        }
     }
 }
+
+dependencies {
+    compile files('libs/h2-1.4.191.jar')
+    runtime fileTree(dir: 'libs', include: '*.jar')
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+
 
 intellij {
     pluginName 'PainPoints'
@@ -57,16 +74,16 @@ task jarSources(type:Jar) {
 assemble.dependsOn jarSources
 
 
-//idea {
-//    project {
-//        jdkName         = javaVersion
-//        languageLevel   = javaVersion
-//    }
-//
-////    module {
-////        generatedSourceDirs += file('gen')
-////    }
-//}
+idea {
+    project {
+        jdkName         = javaVersion
+        languageLevel   = javaVersion
+    }
+
+    module {
+        generatedSourceDirs += file('gen')
+    }
+}
 
 
 /*
@@ -91,6 +108,5 @@ def getVersionName() {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.5'
     distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
