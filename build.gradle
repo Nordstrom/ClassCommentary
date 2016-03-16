@@ -45,8 +45,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
-
-
 intellij {
     pluginName 'PainPoints'
     plugins 'Plugin Development'
@@ -118,7 +116,6 @@ def getVersionName() {
     }
     return version
 }
-
 task wrapper(type: Wrapper) {
     distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
