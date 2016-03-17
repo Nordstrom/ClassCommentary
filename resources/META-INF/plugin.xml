@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>painpoints</id>
   <name>PainPoints</name>
-  <version>1.17</version>
+  <version>1.17.1</version>
   <vendor email="phil@philipleder.com" url="http://philipleder.com">Phil Leder</vendor>
 
   <description><![CDATA[
@@ -14,7 +14,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="141.0"/>
+  <idea-version since-build="131.0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
