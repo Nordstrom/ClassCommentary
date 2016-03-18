@@ -1,5 +1,5 @@
 <idea-plugin version="2">
-  <id>painpoints</id>
+  <id>com.philipleder.plugin.painpoint</id>
   <name>PainPoints</name>
   <version>1.17.1</version>
   <vendor email="phil@philipleder.com" url="http://philipleder.com">Phil Leder</vendor>

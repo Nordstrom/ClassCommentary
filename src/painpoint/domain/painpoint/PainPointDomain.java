@@ -82,7 +82,6 @@ public class PainPointDomain {
     }
 
     public Map<Integer, PainPoint> getPainPointMap(boolean queryForData) throws SQLException {
-
         if(queryForData) {
             Map<Integer, PainPoint> painPointMap = null;
             Connection conn = getConnection();
