@@ -27,7 +27,7 @@ public class PainPointDomain {
     private Connection getConnection() {
         try {
             Class.forName("org.h2.Driver");
-            return DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", "sa", "");
+            return DriverManager.getConnection("jdbc:h2:tcp://10.12.22.97/~/test", "sa", "");
         }
         catch (SQLException sqlEx) {
             PluginManager.getLogger().warn("SQLException "+sqlEx.getMessage());
@@ -117,6 +117,22 @@ public class PainPointDomain {
             PluginManager.getLogger().warn("SQLException " + ex.getMessage());
         }
     }
+
+//    public void insertPluginUser() {
+//        try {
+//            Connection conn = getConnection();
+//            if (conn != null) {
+//                Statement stat = conn.createStatement();
+//                String insertTableSQL = "CREATE USER PLUGINUSER PASSWORD 'pluginuser'";
+//                stat.execute(insertTableSQL);
+//                stat.close();
+//                conn.close();
+//            }
+//        }
+//        catch (SQLException ex) {
+//            PluginManager.getLogger().warn("SQLException " + ex.getMessage());
+//        }
+//    }
 
     public PainPoint getPainPointForId(boolean queryForData, Integer painPointId) {
 
