@@ -33,7 +33,9 @@ public class EditorMenuItem extends AnAction {
 
     public EditorMenuItem() {
         super();
-        mPainPointDomain = new PainPointDomain();
+        if(mPainPointDomain == null) {
+            mPainPointDomain = new PainPointDomain();
+        }
     }
 
     @Override

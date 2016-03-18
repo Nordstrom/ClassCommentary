@@ -32,7 +32,7 @@ public class PainPointPresentationFactory {
 
         Integer painPointId = DataModelUtil.generatePainPointId(classId, gitUsername);
         String classFileName = ClassFileIdCalulator.classFileNameForNode(classTreeNode);
-        List<PainPoint> painPoints = projectViewManager.getPainPointsForClassId(classId);
+        List<PainPoint> painPoints = projectViewManager.getPainPointsForClassId(false, classId);
 
         PsiClass psiClass = classTreeNode.getPsiClass();
         int todoCount = getTodoCount(psiClass);
@@ -127,7 +127,7 @@ public class PainPointPresentationFactory {
         Integer painPointId = DataModelUtil.generatePainPointId(classId, gitPairUser);
 
         String classFileName = virtualFile.getName();
-        List<PainPoint> painPoints = projectViewManager.getPainPointsForClassId(classId);
+        List<PainPoint> painPoints = projectViewManager.getPainPointsForClassId(false, classId);
 
         int todoCount = getTodoCount(psiJavaFile);
         return new PainPointPresentation(classId, painPointId, gitPairUser, painPoints, classFileName, todoCount);

@@ -6,6 +6,7 @@ import painpoint.domain.painpoint.model.PainPoint;
 import painpoint.domain.painpoint.model.PainPointFactory;
 import painpoint.domain.util.DataModelUtil;
 
+import java.net.ConnectException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,23 +18,32 @@ public class PainPointDomain {
 
     private static final String mTableName = "PainPoint";
     private static final String FIELDS = "ID, CLASSID, USERNAME, THUMBSDOWN";
+    private boolean mNetworkError = false;
+    private int mRetryCount = 0;
     private Map<Integer, PainPoint> mPainPointMapCache = null;
 
     public PainPointDomain() {
-//        deletePainPointTable(); //TODO: don't do this dummy.
         createPainPointTable();
     }
 
     private Connection getConnection() {
-        try {
-            Class.forName("org.h2.Driver");
-            return DriverManager.getConnection("jdbc:h2:tcp://10.12.22.97/~/test", "sa", "");
+        if(mNetworkError == true && mRetryCount >= 20) {
+            try {
+                Class.forName("org.h2.Driver");
+                mNetworkError = false;
+                mRetryCount = 0;
+                return DriverManager.getConnection("jdbc:h2:tcp://10.12.22.97/~/test", "sa", "");
+            } catch (SQLException sqlEx) {
+                if (sqlEx.getErrorCode() == 1) {
+                    mNetworkError = true;
+                }
+                PluginManager.getLogger().warn("SQLException " + sqlEx.getMessage());
+            } catch (ClassNotFoundException cnfex) {
+                PluginManager.getLogger().warn("ClassNotFoundException " + cnfex.getMessage());
+            }
         }
-        catch (SQLException sqlEx) {
-            PluginManager.getLogger().warn("SQLException "+sqlEx.getMessage());
-        }
-        catch (ClassNotFoundException cnfex) {
-            PluginManager.getLogger().warn("ClassNotFoundException " + cnfex.getMessage());
+        else {
+            mRetryCount++;
         }
         return null;
     }
@@ -116,22 +126,6 @@ public class PainPointDomain {
             PluginManager.getLogger().warn("SQLException " + ex.getMessage());
         }
     }
-
-//    public void insertPluginUser() {
-//        try {
-//            Connection conn = getConnection();
-//            if (conn != null) {
-//                Statement stat = conn.createStatement();
-//                String insertTableSQL = "CREATE USER PLUGINUSER PASSWORD 'pluginuser'";
-//                stat.execute(insertTableSQL);
-//                stat.close();
-//                conn.close();
-//            }
-//        }
-//        catch (SQLException ex) {
-//            PluginManager.getLogger().warn("SQLException " + ex.getMessage());
-//        }
-//    }
 
     public PainPoint getPainPointForId(boolean queryForData, Integer painPointId) {
 

@@ -50,7 +50,7 @@ public class ProjectViewManager extends AbstractProjectComponent {
                 final ProjectView projectView = ProjectView.getInstance(project);
                 PluginManager.getLogger().warn("[ WAT ] Refreshing Project View");
                 try {
-                    mPainPointDomain.getPainPointMap(true);
+                    mPainPointDomain.getPainPointMap(false);
                 } catch (SQLException sqlEx) {
                     PluginManager.getLogger().warn("[ WAT ] SQLException:" + sqlEx.getMessage());
                 }
@@ -72,14 +72,14 @@ public class ProjectViewManager extends AbstractProjectComponent {
                  refreshProjectView(project);
              }});
     }
-    public List<PainPoint> getPainPointsForClassId(int classId) {
-        return mPainPointDomain.getPainPointsForClassId(true, classId);
+    public List<PainPoint> getPainPointsForClassId(boolean queryForNewData, int classId) {
+        return mPainPointDomain.getPainPointsForClassId(queryForNewData, classId);
     }
 
     /**
      * Ask git who is the current user, and update our internal state.
      */
-    public boolean updateState(Project project) {
+    private boolean updateState(Project project) {
         if (project == null) {
             return false;
         }
