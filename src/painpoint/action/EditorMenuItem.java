@@ -52,7 +52,9 @@ public class EditorMenuItem extends AnAction {
             PsiJavaFile psiJavaFile = (PsiJavaFile) psiFile;
             PainPointPresentation painPointPresentation = PainPointPresentationFactory.creatPresentation(project, virtualFile, psiJavaFile);
 
-            PluginDialog pluginDialog = new PluginDialog(painPointPresentation, mPainPointDomain, project);
+            DataContext dataContext = actionEvent.getDataContext();
+
+            PluginDialog pluginDialog = new PluginDialog(painPointPresentation, mPainPointDomain, project, dataContext);
             pluginDialog.setSize(300, 150);
         }
     }

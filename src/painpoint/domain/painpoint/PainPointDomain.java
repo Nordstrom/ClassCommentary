@@ -1,6 +1,13 @@
 package painpoint.domain.painpoint;
 
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.wm.StatusBar;
+import com.intellij.openapi.wm.WindowManager;
+import com.intellij.ui.awt.RelativePoint;
 import groovy.lang.Singleton;
 import painpoint.domain.painpoint.model.PainPoint;
 import painpoint.domain.painpoint.model.PainPointFactory;
@@ -109,7 +116,7 @@ public class PainPointDomain {
         return mPainPointMapCache;
     }
 
-    public void insertPainPoint(PainPoint painPoint) {
+    public boolean insertPainPoint(PainPoint painPoint) {
         try {
             Connection conn = getConnection();
             if (conn != null) {
@@ -120,11 +127,13 @@ public class PainPointDomain {
                 stat.execute(insertTableSQL);
                 stat.close();
                 conn.close();
+                return true;
             }
         }
         catch (SQLException ex) {
             PluginManager.getLogger().warn("SQLException " + ex.getMessage());
         }
+        return false;
     }
 
     public PainPoint getPainPointForId(boolean queryForData, Integer painPointId) {
@@ -213,7 +222,7 @@ public class PainPointDomain {
         return painPointList;
     }
 
-    private void updatePainPoint(PainPoint painPoint) {
+    private boolean updatePainPoint(PainPoint painPoint) {
         try {
             Connection conn = getConnection();
             if (conn != null) {
@@ -222,22 +231,25 @@ public class PainPointDomain {
                 stat.execute(updateTableSQL);
                 stat.close();
                 conn.close();
+                return true;
             }
         }
         catch (SQLException ex) {
             PluginManager.getLogger().warn("SQLException " + ex.getMessage());
         }
+        return false;
     }
 
 
-    public void addOrUpdateForClass(Integer classId, String userName, boolean painValue) {
+    public boolean addOrUpdateForClass(Integer classId, String userName, boolean painValue) {
         Integer painPointId = DataModelUtil.generatePainPointId(classId, userName);
         PainPoint painPoint = new PainPoint(painPointId, classId, userName, painValue);
         if(hasPainPointForUser(classId, userName)) {
             updatePainPoint(painPoint);
         }
         else {
-            insertPainPoint(painPoint);
+            return insertPainPoint(painPoint);
         }
+        return false;
     }
 }
