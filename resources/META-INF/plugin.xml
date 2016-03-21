@@ -46,6 +46,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <projectViewNodeDecorator implementation="painpoint.decoration.CCProjectViewNodeDecorator" />
+    <applicationService serviceImplementation="painpoint.Storage"/>
+    <applicationConfigurable instance="painpoint.Configuration"/>
   </extensions>
 
 </idea-plugin>

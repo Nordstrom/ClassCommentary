@@ -2,6 +2,7 @@ package painpoint.domain.painpoint;
 
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -9,6 +10,7 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
 import groovy.lang.Singleton;
+import painpoint.Storage;
 import painpoint.domain.painpoint.model.PainPoint;
 import painpoint.domain.painpoint.model.PainPointFactory;
 import painpoint.domain.util.DataModelUtil;
@@ -25,6 +27,7 @@ public class PainPointDomain {
 
     private static final String mTableName = "PainPoint";
     private static final String FIELDS = "ID, CLASSID, USERNAME, THUMBSDOWN";
+    private final Storage mStorage = ServiceManager.getService(Storage.class);
     private boolean mNetworkError = false;
     private int mRetryCount = 0;
     private Map<Integer, PainPoint> mPainPointMapCache = null;
@@ -34,12 +37,11 @@ public class PainPointDomain {
     }
 
     private Connection getConnection() {
-        if(mNetworkError == true && mRetryCount >= 20) {
+        if(mNetworkError == false || mRetryCount > 10) {
             try {
                 Class.forName("org.h2.Driver");
-                mNetworkError = false;
                 mRetryCount = 0;
-                return DriverManager.getConnection("jdbc:h2:tcp://10.12.22.97/~/test", "sa", "");
+                return DriverManager.getConnection(mStorage.getH2Url(), "sa", "");
             } catch (SQLException sqlEx) {
                 if (sqlEx.getErrorCode() == 1) {
                     mNetworkError = true;
@@ -99,7 +101,7 @@ public class PainPointDomain {
     }
 
     public Map<Integer, PainPoint> getPainPointMap(boolean queryForData) throws SQLException {
-        if(queryForData) {
+        if(queryForData || mPainPointMapCache == null) {
             Map<Integer, PainPoint> painPointMap = null;
             Connection conn = getConnection();
             if (conn != null) {

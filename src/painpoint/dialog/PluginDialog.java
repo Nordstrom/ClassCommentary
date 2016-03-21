@@ -107,7 +107,7 @@ public class PluginDialog extends JDialog {
                 .getStatusBar(DataKeys.PROJECT.getData(dataContext));
 
         JBPopupFactory.getInstance()
-                .createHtmlTextBalloonBuilder(htmlText, MessageType.INFO, null)
+                .createHtmlTextBalloonBuilder(htmlText, MessageType.ERROR, null)
                 .setFadeoutTime(7500)
                 .createBalloon()
                 .show(RelativePoint.getCenterOf(statusBar.getComponent()), Balloon.Position.atRight);
