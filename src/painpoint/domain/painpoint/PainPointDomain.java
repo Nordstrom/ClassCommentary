@@ -17,10 +17,7 @@ import painpoint.domain.util.DataModelUtil;
 
 import java.net.ConnectException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Singleton
 public class PainPointDomain {
@@ -30,7 +27,7 @@ public class PainPointDomain {
     private final Storage mStorage = ServiceManager.getService(Storage.class);
     private boolean mNetworkError = false;
     private int mRetryCount = 0;
-    private Map<Integer, PainPoint> mPainPointMapCache = null;
+    private Map<Integer, PainPoint> mPainPointMapCache = new HashMap<Integer, PainPoint>();
 
     public PainPointDomain() {
         createPainPointTable();
@@ -101,7 +98,7 @@ public class PainPointDomain {
     }
 
     public Map<Integer, PainPoint> getPainPointMap(boolean queryForData) throws SQLException {
-        if(queryForData || mPainPointMapCache == null) {
+        if(queryForData || mPainPointMapCache == null || mPainPointMapCache.isEmpty()) {
             Map<Integer, PainPoint> painPointMap = null;
             Connection conn = getConnection();
             if (conn != null) {
@@ -141,7 +138,7 @@ public class PainPointDomain {
     public PainPoint getPainPointForId(boolean queryForData, Integer painPointId) {
 
         PainPoint painPoint = null;
-        if(queryForData && mPainPointMapCache != null) {
+        if(queryForData && !mPainPointMapCache.isEmpty()) {
             return mPainPointMapCache.get(painPointId);
         }
         else {
@@ -169,7 +166,7 @@ public class PainPointDomain {
 
     private List<PainPoint> getPainPointsCacheForClassId(Integer classId) {
         List<PainPoint> painPointList = new ArrayList<PainPoint>();
-        if(mPainPointMapCache != null) {
+        if(!mPainPointMapCache.isEmpty()) {
             Iterator it = mPainPointMapCache.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
@@ -196,11 +193,10 @@ public class PainPointDomain {
     public List<PainPoint> getPainPointsForClassId(boolean queryForData, Integer classId) {
 
         List<PainPoint> painPointList = new ArrayList<PainPoint>();
-        if(!queryForData && mPainPointMapCache != null) {
+        if(!queryForData && !mPainPointMapCache.isEmpty()) {
             painPointList = getPainPointsCacheForClassId(classId);
         }
         else {
-            if(queryForData) {
                 Map<Integer, PainPoint> painPointMap = null;
                 Connection conn = getConnection();
                 if (conn != null) {
@@ -219,7 +215,6 @@ public class PainPointDomain {
                         PluginManager.getLogger().warn("SQLException " + ex.getMessage());
                     }
                 }
-            }
         }
         return painPointList;
     }
@@ -247,11 +242,10 @@ public class PainPointDomain {
         Integer painPointId = DataModelUtil.generatePainPointId(classId, userName);
         PainPoint painPoint = new PainPoint(painPointId, classId, userName, painValue);
         if(hasPainPointForUser(classId, userName)) {
-            updatePainPoint(painPoint);
+            return updatePainPoint(painPoint);
         }
         else {
             return insertPainPoint(painPoint);
         }
-        return false;
     }
 }

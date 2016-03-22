@@ -97,6 +97,7 @@ public class Configuration implements Configurable {
         PluginManager.getLogger().info("apply");
         ApplicationManager.getApplication().saveAll();
         mStorage.setH2Url(mH2Url);
+        mModified = false;
     }
 
     @Override
