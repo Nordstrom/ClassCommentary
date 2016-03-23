@@ -1,23 +1,15 @@
 package painpoint.domain.painpoint;
 
 import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.ui.MessageType;
-import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.WindowManager;
-import com.intellij.ui.awt.RelativePoint;
 import groovy.lang.Singleton;
 import painpoint.Storage;
 import painpoint.domain.painpoint.model.PainPoint;
 import painpoint.domain.painpoint.model.PainPointFactory;
 import painpoint.domain.util.DataModelUtil;
-
-import java.net.ConnectException;
 import java.sql.*;
 import java.util.*;
+import org.h2.jdbcx.JdbcConnectionPool;
 
 @Singleton
 public class PainPointDomain {
@@ -34,19 +26,23 @@ public class PainPointDomain {
     }
 
     private Connection getConnection() {
-        if(mNetworkError == false || mRetryCount > 10) {
+        if(!mNetworkError || mRetryCount > 10) {
             try {
-                Class.forName("org.h2.Driver");
                 mRetryCount = 0;
-                return DriverManager.getConnection(mStorage.getH2Url(), "sa", "");
+                JdbcConnectionPool cp = JdbcConnectionPool.
+                        create(mStorage.getH2Url(), "sa", "");
+                Connection conn = cp.getConnection();
+
+                return conn;
             } catch (SQLException sqlEx) {
                 if (sqlEx.getErrorCode() == 1) {
                     mNetworkError = true;
                 }
                 PluginManager.getLogger().warn("SQLException " + sqlEx.getMessage());
-            } catch (ClassNotFoundException cnfex) {
-                PluginManager.getLogger().warn("ClassNotFoundException " + cnfex.getMessage());
             }
+//            FoundException cnfex) {
+//                PluginManager.getLogger().warn("ClassNotFoundException " + cnfex.getMessage());
+//            }
         }
         else {
             mRetryCount++;
