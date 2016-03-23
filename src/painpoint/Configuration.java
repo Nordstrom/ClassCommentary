@@ -17,11 +17,11 @@ import java.awt.event.KeyListener;
 
 public class Configuration implements Configurable {
 
-    private final Storage mStorage = ServiceManager.getService(Storage.class);
+    private Storage mStorage = ServiceManager.getService(Storage.class);
     private JTextField mTextField;
     private String mH2Url = "";
-    private String defaultUrl = "jdbc:h2:tcp://localhost/~/test";
-    private String sharedUrl = "jdbc:h2:tcp://10.12.22.97/~/test";
+    private String sharedUrl = "jdbc:h2:tcp://localhost/~/test";
+    private String defaultUrl = "jdbc:h2:tcp://10.12.22.97/~/test";
     boolean mModified = false;
     @Nls
     @Override
@@ -39,7 +39,6 @@ public class Configuration implements Configurable {
     @Override
     public JComponent createComponent() {
 
-//        String existingUrl = ApplicationManager.getApplication().
         if(!mStorage.getH2Url().isEmpty()) {
             mH2Url = mStorage.getH2Url();
         } else {
@@ -64,9 +63,7 @@ public class Configuration implements Configurable {
         mTextField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                PluginManager.getLogger().info("Key Changed: " + e.getKeyChar());
-                mH2Url = mTextField.getText();
-                mModified = true;
+
             }
 
             @Override
@@ -76,10 +73,11 @@ public class Configuration implements Configurable {
 
             @Override
             public void keyReleased(KeyEvent e) {
-
+                PluginManager.getLogger().info("Key Changed: " + e.getKeyChar());
+                mH2Url = mTextField.getText();
+                mModified = true;
             }
         });
-//        textField.setSize(300, 50);
         mainPaine.add(new JLabel("H2 Server Url:"));
         mainPaine.add(mTextField);
         // get content pane, which is usually the

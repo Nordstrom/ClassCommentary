@@ -31,9 +31,7 @@ public class PainPointDomain {
                 mRetryCount = 0;
                 JdbcConnectionPool cp = JdbcConnectionPool.
                         create(mStorage.getH2Url(), "sa", "");
-                Connection conn = cp.getConnection();
-
-                return conn;
+                return cp.getConnection();
             } catch (SQLException sqlEx) {
                 if (sqlEx.getErrorCode() == 1) {
                     mNetworkError = true;
