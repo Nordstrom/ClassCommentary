@@ -2,7 +2,9 @@ package painpoint.dialog;
 
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+
 import java.awt.event.ActionEvent;
 
 import com.intellij.openapi.ui.MessageType;
@@ -27,12 +29,11 @@ public class PluginDialog extends JDialog {
 
         try {
             painPointDomain.getPainPointMap(true);
-        }
-        catch (SQLException sEx) {
+        } catch (SQLException sEx) {
             System.out.println("SQLException.." + sEx.getMessage());
         }
         final ProjectViewManager projectViewManager = ProjectViewManager.getInstance(project);
-        setSize(100,100);
+        setSize(100, 100);
 
         System.out.println("creating the window..");
         // set the position of the window
@@ -57,24 +58,27 @@ public class PluginDialog extends JDialog {
         jCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JCheckBox jCheckBox1 = (JCheckBox)actionEvent.getSource();
-                boolean isSelected = jCheckBox1.isSelected();
-                Integer classId = fPainPointPresentation.getClassId();
-                String gitPair = fPainPointPresentation.getGitPairString();
-                boolean success = fPainPointDomain.addOrUpdateForClass(classId, gitPair, isSelected);
-                if(success) {
-                    try {
-                        fPainPointDomain.getPainPointMap(true);
-                        successPopup(dataContext);
-                    } catch (SQLException sqlEx) {
-                        System.out.println("SQLException: " + sqlEx.getMessage());
-                        failPopup(dataContext);
+                JCheckBox jCheckBox1 = (JCheckBox) actionEvent.getSource();
+                final boolean isSelected = jCheckBox1.isSelected();
+                final Integer classId = fPainPointPresentation.getClassId();
+                final String gitPair = fPainPointPresentation.getGitPairString();
+                ApplicationManager.getApplication().invokeLater(new Runnable() {
+                    public void run() {
+                        boolean success = fPainPointDomain.addOrUpdateForClass(classId, gitPair, isSelected);
+                        if (success) {
+                            try {
+                                fPainPointDomain.getPainPointMap(true);
+                                successPopup(dataContext);
+                            } catch (SQLException sqlEx) {
+                                System.out.println("SQLException: " + sqlEx.getMessage());
+                                failPopup(dataContext);
+                            }
+                            fProjectViewManager.refreshProjectView(fProject);
+                        } else {
+                            failPopup(dataContext);
+                        }
                     }
-                    fProjectViewManager.refreshProjectView(fProject);
-                }
-                else {
-                    failPopup(dataContext);
-                }
+                });
             }
         });
         cbPane.add(jCheckBox);
