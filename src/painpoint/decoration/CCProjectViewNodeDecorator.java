@@ -3,6 +3,7 @@
  */
 package painpoint.decoration;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.projectView.PresentationData;
@@ -17,11 +18,16 @@ public class CCProjectViewNodeDecorator implements ProjectViewNodeDecorator {
     @Override
     public void decorate(ProjectViewNode viewNode, PresentationData presentationData) {
         if (viewNode != null && viewNode instanceof ClassTreeNode) {
-
-            Project project = viewNode.getProject();
-            PainPointPresentation presentation = PainPointPresentationFactory.creatPresentation(project, (ClassTreeNode)viewNode);
-            ClassFileDecoration classFileDecoration = new ClassFileDecoration(presentation);
-            classFileDecoration.decorate(viewNode, presentationData);
+            final Project project = viewNode.getProject();
+            final ClassTreeNode classTreeNode = (ClassTreeNode)viewNode;
+            final PresentationData fPresentationData = presentationData;
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                public void run() {
+                    PainPointPresentation presentation = PainPointPresentationFactory.creatPresentation(project, classTreeNode);
+                    ClassFileDecoration classFileDecoration = new ClassFileDecoration(presentation);
+                    classFileDecoration.decorate(classTreeNode, fPresentationData);
+                }
+            });
         }
     }
 

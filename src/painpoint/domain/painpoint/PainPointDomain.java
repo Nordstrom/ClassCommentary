@@ -31,12 +31,11 @@ public class PainPointDomain {
         try {
             JdbcConnectionPool cp = JdbcConnectionPool.
                     create(mStorage.getH2Url(), "sa", "");
+            Connection connection = cp.getConnection();
             mNetworkError = false;
-            return cp.getConnection();
+            return connection;
         } catch (SQLException sqlEx) {
-            if (sqlEx.getErrorCode() == 1) {
-                mNetworkError = true;
-            }
+            mNetworkError = true;
             PluginManager.getLogger().warn("SQLException " + sqlEx.getMessage());
         }
         return null;
@@ -75,7 +74,7 @@ public class PainPointDomain {
 
     private void createPainPointTable() {
         if (mNetworkError) {
-            PluginManager.getLogger().debug("getPainPointMap  returning null.  Database may be down.");
+            PluginManager.getLogger().debug("createPainPointTable  returning null.  Database may be down.");
             return;
         }
         ApplicationManager.getApplication().invokeLater(new Runnable() {
@@ -192,6 +191,11 @@ public class PainPointDomain {
     }
 
     public List<PainPoint> getPainPointsForClassId(boolean queryForData, Integer classId) {
+
+        if (mNetworkError) {
+            PluginManager.getLogger().debug("getPainPointsForClassId  returning null.  Database may be down.");
+            return null;
+        }
 
         List<PainPoint> painPointList = new ArrayList<PainPoint>();
         if (!queryForData && !mPainPointMapCache.isEmpty()) {
