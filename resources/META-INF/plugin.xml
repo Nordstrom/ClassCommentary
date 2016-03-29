@@ -1,15 +1,16 @@
 <idea-plugin version="2">
   <id>com.philipleder.plugin.painpoint</id>
   <name>PainPoints</name>
-  <version>1.17.1</version>
+  <version>1.17.8</version>
   <vendor email="phil@philipleder.com" url="http://philipleder.com">Phil Leder</vendor>
 
   <description><![CDATA[
-      PainPoints.  Boo boos.  Yuckyness.  H@CKS
+      Pain Points.  Boo boos.  Yuckyness.  H@CKS
     ]]></description>
 
   <change-notes><![CDATA[
-      Figuring out how to change this when loading from an enterprise repo.
+      1.17.8 Very strict database retry, and now using invoke later on database queries.
+      1.17.6 Figuring out how to change this when loading from an enterprise repo.
     ]]>
   </change-notes>
 
@@ -46,6 +47,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <projectViewNodeDecorator implementation="painpoint.decoration.CCProjectViewNodeDecorator" />
+    <applicationService serviceImplementation="painpoint.Storage"/>
+    <applicationConfigurable instance="painpoint.Configuration"/>
   </extensions>
 
 </idea-plugin>

@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>painpoints</id>
   <name>PainPoints</name>
-  <version>1.17.1</version>
+  <version>1.17.5</version>
   <vendor email="phil@philipleder.com" url="http://philipleder.com">Phil Leder</vendor>
 
   <description><![CDATA[

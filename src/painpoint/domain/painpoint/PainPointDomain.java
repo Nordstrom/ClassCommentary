@@ -1,56 +1,42 @@
 package painpoint.domain.painpoint;
 
 import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.ui.MessageType;
-import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.WindowManager;
-import com.intellij.ui.awt.RelativePoint;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
 import groovy.lang.Singleton;
+import painpoint.Storage;
 import painpoint.domain.painpoint.model.PainPoint;
 import painpoint.domain.painpoint.model.PainPointFactory;
 import painpoint.domain.util.DataModelUtil;
 
-import java.net.ConnectException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import org.h2.jdbcx.JdbcConnectionPool;
 
 @Singleton
 public class PainPointDomain {
 
     private static final String mTableName = "PainPoint";
     private static final String FIELDS = "ID, CLASSID, USERNAME, THUMBSDOWN";
+    private final Storage mStorage = ServiceManager.getService(Storage.class);
     private boolean mNetworkError = false;
-    private int mRetryCount = 0;
-    private Map<Integer, PainPoint> mPainPointMapCache = null;
+    private Map<Integer, PainPoint> mPainPointMapCache = new HashMap<Integer, PainPoint>();
 
     public PainPointDomain() {
         createPainPointTable();
     }
 
     private Connection getConnection() {
-        if(mNetworkError == true && mRetryCount >= 20) {
-            try {
-                Class.forName("org.h2.Driver");
-                mNetworkError = false;
-                mRetryCount = 0;
-                return DriverManager.getConnection("jdbc:h2:tcp://10.12.22.97/~/test", "sa", "");
-            } catch (SQLException sqlEx) {
-                if (sqlEx.getErrorCode() == 1) {
-                    mNetworkError = true;
-                }
-                PluginManager.getLogger().warn("SQLException " + sqlEx.getMessage());
-            } catch (ClassNotFoundException cnfex) {
-                PluginManager.getLogger().warn("ClassNotFoundException " + cnfex.getMessage());
-            }
-        }
-        else {
-            mRetryCount++;
+        try {
+            JdbcConnectionPool cp = JdbcConnectionPool.
+                    create(mStorage.getH2Url(), "sa", "");
+            Connection connection = cp.getConnection();
+            mNetworkError = false;
+            return connection;
+        } catch (SQLException sqlEx) {
+            mNetworkError = true;
+            PluginManager.getLogger().warn("SQLException " + sqlEx.getMessage());
         }
         return null;
     }
@@ -58,8 +44,8 @@ public class PainPointDomain {
     private boolean hasPainPointForUser(Integer classId, String userName) {
 
         List<PainPoint> painPointsForClass = getPainPointsCacheForClassId(classId);
-        for(PainPoint painPoint : painPointsForClass) {
-            if(painPoint.getUserName().equalsIgnoreCase(userName)) {
+        for (PainPoint painPoint : painPointsForClass) {
+            if (painPoint.getUserName().equalsIgnoreCase(userName)) {
                 return true;
             }
         }
@@ -69,44 +55,60 @@ public class PainPointDomain {
 
     // For testing purposes, early on.  Not "intended" for future use.
     private void deletePainPointTable() {
-        try {
-            Connection conn = getConnection();
-            if (conn != null) {
-                Statement stat = conn.createStatement();
-                stat.execute("DROP TABLE " + mTableName);
-                stat.close();
-                conn.close();
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    Connection conn = getConnection();
+                    if (conn != null) {
+                        Statement stat = conn.createStatement();
+                        stat.execute("DROP TABLE " + mTableName);
+                        stat.close();
+                        conn.close();
+                    }
+                } catch (SQLException ex) {
+                    PluginManager.getLogger().warn("deletePainPointTable SQLException " + ex.getMessage());
+                }
             }
-        }
-        catch (SQLException ex) {
-            PluginManager.getLogger().warn("deletePainPointTable SQLException " + ex.getMessage());
-        }
+        });
     }
 
     private void createPainPointTable() {
-        try {
-            Connection conn = getConnection();
-            if (conn != null) {
-                Statement stat = conn.createStatement();
-                stat.execute("CREATE TABLE " + mTableName + " (id INTEGER PRIMARY KEY, classid INT NOT NULL, username VARCHAR(256), thumbsdown BOOLEAN)");
-                stat.close();
-                conn.close();
+        if (mNetworkError) {
+            PluginManager.getLogger().debug("createPainPointTable  returning null.  Database may be down.");
+            return;
+        }
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    Connection conn = getConnection();
+                    if (conn != null) {
+                        Statement stat = conn.createStatement();
+                        stat.execute("CREATE TABLE " + mTableName + " (id INTEGER PRIMARY KEY, classid INT NOT NULL, username VARCHAR(256), thumbsdown BOOLEAN)");
+                        stat.close();
+                        conn.close();
+                    }
+                } catch (SQLException ex) {
+                    PluginManager.getLogger().debug("SQLException " + ex.getMessage());
+                }
             }
-        }
-        catch (SQLException ex) {
-            PluginManager.getLogger().debug("SQLException " + ex.getMessage());
-        }
+        });
     }
 
     public Map<Integer, PainPoint> getPainPointMap(boolean queryForData) throws SQLException {
-        if(queryForData) {
+
+        if (mNetworkError) {
+            PluginManager.getLogger().debug("getPainPointMap  returning null.  Database may be down.");
+            return null;
+        }
+
+        if (queryForData || mPainPointMapCache == null || mPainPointMapCache.isEmpty()) {
             Map<Integer, PainPoint> painPointMap = null;
             Connection conn = getConnection();
             if (conn != null) {
                 Statement stat = conn.createStatement();
                 ResultSet resultSet = stat.executeQuery("SELECT * FROM " + mTableName);
                 painPointMap = PainPointFactory.createPainPointMap(resultSet);
-                if(painPointMap != null && !painPointMap.isEmpty()) {
+                if (painPointMap != null && !painPointMap.isEmpty()) {
                     mPainPointMapCache = painPointMap;
                 }
                 stat.close();
@@ -122,15 +124,14 @@ public class PainPointDomain {
             if (conn != null) {
                 Statement stat = conn.createStatement();
                 String insertTableSQL = "INSERT INTO " + mTableName +
-                        "("+FIELDS+") " +
+                        "(" + FIELDS + ") " +
                         "VALUES(" + painPoint.toSQLValues() + ")";
                 stat.execute(insertTableSQL);
                 stat.close();
                 conn.close();
                 return true;
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             PluginManager.getLogger().warn("SQLException " + ex.getMessage());
         }
         return false;
@@ -139,11 +140,10 @@ public class PainPointDomain {
     public PainPoint getPainPointForId(boolean queryForData, Integer painPointId) {
 
         PainPoint painPoint = null;
-        if(queryForData && mPainPointMapCache != null) {
+        if (queryForData && !mPainPointMapCache.isEmpty()) {
             return mPainPointMapCache.get(painPointId);
-        }
-        else {
-            if(queryForData) {
+        } else {
+            if (queryForData) {
                 Connection conn = getConnection();
                 if (conn != null) {
                     try {
@@ -155,8 +155,7 @@ public class PainPointDomain {
 
                         stat.close();
                         conn.close();
-                    }
-                    catch (SQLException ex) {
+                    } catch (SQLException ex) {
                         PluginManager.getLogger().warn("SQLException " + ex.getMessage());
                     }
                 }
@@ -167,7 +166,7 @@ public class PainPointDomain {
 
     private List<PainPoint> getPainPointsCacheForClassId(Integer classId) {
         List<PainPoint> painPointList = new ArrayList<PainPoint>();
-        if(mPainPointMapCache != null) {
+        if (!mPainPointMapCache.isEmpty()) {
             Iterator it = mPainPointMapCache.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
@@ -185,7 +184,7 @@ public class PainPointDomain {
 
     private void addPainPoint(PainPoint painPoint) {
 
-        if(painPoint != null) {
+        if (painPoint != null) {
             mPainPointMapCache.put(painPoint.getId(), painPoint);
         }
 
@@ -193,29 +192,29 @@ public class PainPointDomain {
 
     public List<PainPoint> getPainPointsForClassId(boolean queryForData, Integer classId) {
 
-        List<PainPoint> painPointList = new ArrayList<PainPoint>();
-        if(!queryForData && mPainPointMapCache != null) {
-            painPointList = getPainPointsCacheForClassId(classId);
+        if (mNetworkError) {
+            PluginManager.getLogger().debug("getPainPointsForClassId  returning null.  Database may be down.");
+            return null;
         }
-        else {
-            if(queryForData) {
-                Map<Integer, PainPoint> painPointMap = null;
-                Connection conn = getConnection();
-                if (conn != null) {
-                    try {
-                        Statement stat = conn.createStatement();
-                        ResultSet resultSet = stat.executeQuery("SELECT * FROM " + mTableName + " WHERE classid = " + classId);
-                        painPointList = PainPointFactory.createPainPoints(resultSet);
 
-                        PluginManager.getLogger().debug("getPainPointsForClassId size: " + painPointList.size());
+        List<PainPoint> painPointList = new ArrayList<PainPoint>();
+        if (!queryForData && !mPainPointMapCache.isEmpty()) {
+            painPointList = getPainPointsCacheForClassId(classId);
+        } else {
+            Connection conn = getConnection();
+            if (conn != null) {
+                try {
+                    Statement stat = conn.createStatement();
+                    ResultSet resultSet = stat.executeQuery("SELECT * FROM " + mTableName + " WHERE classid = " + classId);
+                    painPointList = PainPointFactory.createPainPoints(resultSet);
 
-                        stat.close();
-                        conn.close();
+                    PluginManager.getLogger().debug("getPainPointsForClassId size: " + painPointList.size());
 
-                    }
-                    catch (SQLException ex) {
-                        PluginManager.getLogger().warn("SQLException " + ex.getMessage());
-                    }
+                    stat.close();
+                    conn.close();
+
+                } catch (SQLException ex) {
+                    PluginManager.getLogger().warn("SQLException " + ex.getMessage());
                 }
             }
         }
@@ -227,14 +226,13 @@ public class PainPointDomain {
             Connection conn = getConnection();
             if (conn != null) {
                 Statement stat = conn.createStatement();
-                String updateTableSQL = "UPDATE " + mTableName + " SET thumbsdown = " + painPoint.isThumbsDown() + " WHERE id = " +painPoint.getId();
+                String updateTableSQL = "UPDATE " + mTableName + " SET thumbsdown = " + painPoint.isThumbsDown() + " WHERE id = " + painPoint.getId();
                 stat.execute(updateTableSQL);
                 stat.close();
                 conn.close();
                 return true;
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             PluginManager.getLogger().warn("SQLException " + ex.getMessage());
         }
         return false;
@@ -244,12 +242,10 @@ public class PainPointDomain {
     public boolean addOrUpdateForClass(Integer classId, String userName, boolean painValue) {
         Integer painPointId = DataModelUtil.generatePainPointId(classId, userName);
         PainPoint painPoint = new PainPoint(painPointId, classId, userName, painValue);
-        if(hasPainPointForUser(classId, userName)) {
-            updatePainPoint(painPoint);
-        }
-        else {
+        if (hasPainPointForUser(classId, userName)) {
+            return updatePainPoint(painPoint);
+        } else {
             return insertPainPoint(painPoint);
         }
-        return false;
     }
 }

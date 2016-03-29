@@ -80,7 +80,7 @@ public class PainPointPresentationFactory {
     }
 
     public static int getTodoCount(PsiClass psiClass) {
-        return StringUtils.countMatches(psiClass.getText().toLowerCase(), "todo");
+        return getTodoCount(psiClass.getContainingFile());
     }
 
     public static int getTodoCountSimple(PsiFile psiFile) {
@@ -108,7 +108,6 @@ public class PainPointPresentationFactory {
                     String commentText = element.getText();
                     if(StringUtils.containsIgnoreCase(commentText, "TODO")) {
                         todoList.add(element.getText());
-                        System.out.println("\n\n\n"+todoList.size()+" ________________________________________________"+element.getText());
                     }
                 }
 

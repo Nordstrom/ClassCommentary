@@ -76,7 +76,7 @@ public class GitRunner {
         if (output != null) {
             return output.trim();
         }
-        return null;
+        return "Anonymous";
     }
 
     /**

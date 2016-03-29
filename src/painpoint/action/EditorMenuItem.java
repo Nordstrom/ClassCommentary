@@ -1,5 +1,6 @@
 package painpoint.action;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import painpoint.decoration.PainPointPresentation;
@@ -19,13 +20,13 @@ import org.jetbrains.annotations.Nullable;
  * Notes for phil:
  * PSIViewer could get me a away to hover an icon over a specific element in a file.  Like annotations.
  * Check RoboHexar for examples.  Maybe it uses it.c
- *
- JBPopupFactory.getInstance()
- .createHtmlTextBalloonBuilder(htmlText, messageType, null)
- .setFadeoutTime(7500)
- .createBalloon()
- .show(RelativePoint.getCenterOf(statusBar.getComponent()),
- Balloon.Position.atRight);
+ * <p/>
+ * JBPopupFactory.getInstance()
+ * .createHtmlTextBalloonBuilder(htmlText, messageType, null)
+ * .setFadeoutTime(7500)
+ * .createBalloon()
+ * .show(RelativePoint.getCenterOf(statusBar.getComponent()),
+ * Balloon.Position.atRight);
  */
 public class EditorMenuItem extends AnAction {
 
@@ -33,7 +34,7 @@ public class EditorMenuItem extends AnAction {
 
     public EditorMenuItem() {
         super();
-        if(mPainPointDomain == null) {
+        if (mPainPointDomain == null) {
             mPainPointDomain = new PainPointDomain();
         }
     }
@@ -41,53 +42,55 @@ public class EditorMenuItem extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent actionEvent) {
 
-        // get the project instance.
-        final Project project = actionEvent.getRequiredData(CommonDataKeys.PROJECT);
-
         // get the currently chosen file.
-        VirtualFile virtualFile = DataKeys.VIRTUAL_FILE.getData(actionEvent.getDataContext());
+        final PsiFile psiFile = actionEvent.getData(LangDataKeys.PSI_FILE);
 
-        PsiFile psiFile = actionEvent.getData(LangDataKeys.PSI_FILE);
-        if(psiFile instanceof PsiJavaFile) {
-            PsiJavaFile psiJavaFile = (PsiJavaFile) psiFile;
-            PainPointPresentation painPointPresentation = PainPointPresentationFactory.creatPresentation(project, virtualFile, psiJavaFile);
-
-            DataContext dataContext = actionEvent.getDataContext();
-
-            PluginDialog pluginDialog = new PluginDialog(painPointPresentation, mPainPointDomain, project, dataContext);
-            pluginDialog.setSize(300, 150);
+        if (psiFile instanceof PsiJavaFile) {
+            // get the project instance.
+            final Project project = actionEvent.getRequiredData(CommonDataKeys.PROJECT);
+            final VirtualFile virtualFile = DataKeys.VIRTUAL_FILE.getData(actionEvent.getDataContext());
+            final DataContext dataContext = actionEvent.getDataContext();
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                public void run() {
+                    PsiJavaFile psiJavaFile = (PsiJavaFile) psiFile;
+                    PainPointPresentation painPointPresentation = PainPointPresentationFactory.creatPresentation(project, virtualFile, psiJavaFile);
+                    PluginDialog pluginDialog = new PluginDialog(painPointPresentation, mPainPointDomain, project, dataContext);
+                    pluginDialog.setSize(300, 150);
+                }
+            });
         }
     }
 
-    private @Nullable
+    private
+    @Nullable
     VirtualFile getActiveVirtualFile(Editor editor) {
         Document currentDoc = editor.getDocument();
         return FileDocumentManager.getInstance().getFile(currentDoc);
     }
 
-    private @Nullable
+    private
+    @Nullable
     String getActiveFileName(Editor editor) {
         VirtualFile currentFile = getActiveVirtualFile(editor);
         String fileName = null;
-        if(currentFile != null) {
+        if (currentFile != null) {
             fileName = currentFile.getName();
             PluginManager.getLogger().warn("fileName: " + fileName);
-        }
-        else {
+        } else {
             PluginManager.getLogger().warn("No file name found!");
         }
         return fileName;
     }
 
-    private @Nullable
+    private
+    @Nullable
     String getActiveFilePath(Editor editor) {
         VirtualFile currentFile = getActiveVirtualFile(editor);
         String fileNamePath = null;
-        if(currentFile != null) {
+        if (currentFile != null) {
             fileNamePath = currentFile.getPath();
             PluginManager.getLogger().warn("fileNamePath: " + fileNamePath);
-        }
-        else {
+        } else {
             PluginManager.getLogger().warn("No file path found!");
         }
         return fileNamePath;
