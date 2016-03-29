@@ -54,13 +54,17 @@ public class  PainPointPresentation {
     }
 
     public List<PainPoint> getThumbsDownList() {
-        List<PainPoint> thumbsDown = new ArrayList<PainPoint>();
-        for(PainPoint painPoint: mPainPoints) {
-            if(painPoint.isThumbsDown()) {
-                thumbsDown.add(painPoint);
+
+        if(mPainPoints != null && mPainPoints.isEmpty()) {
+            List<PainPoint> thumbsDown = new ArrayList<PainPoint>();
+            for (PainPoint painPoint : mPainPoints) {
+                if (painPoint.isThumbsDown()) {
+                    thumbsDown.add(painPoint);
+                }
             }
+            return thumbsDown;
         }
-        return thumbsDown;
+        return null;
     }
 
     public boolean hasPainPoints() {
@@ -69,6 +73,9 @@ public class  PainPointPresentation {
 
     public boolean currentUserHasPainPoint() {
         List<PainPoint> painPoints = getThumbsDownList();
+        if(painPoints ==  null) {
+            return false;
+        }
         for(PainPoint painPoint : painPoints) {
             if(painPoint.isThumbsDown() && painPoint.getId().equals(getPainPointId())) {
                 return true;
