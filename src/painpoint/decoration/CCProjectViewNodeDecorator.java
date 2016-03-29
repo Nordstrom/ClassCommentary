@@ -19,15 +19,12 @@ public class CCProjectViewNodeDecorator implements ProjectViewNodeDecorator {
     public void decorate(ProjectViewNode viewNode, PresentationData presentationData) {
         if (viewNode != null && viewNode instanceof ClassTreeNode) {
             final Project project = viewNode.getProject();
-            final ClassTreeNode classTreeNode = (ClassTreeNode)viewNode;
+            final ClassTreeNode classTreeNode = (ClassTreeNode) viewNode;
             final PresentationData fPresentationData = presentationData;
-            ApplicationManager.getApplication().invokeLater(new Runnable() {
-                public void run() {
-                    PainPointPresentation presentation = PainPointPresentationFactory.creatPresentation(project, classTreeNode);
-                    ClassFileDecoration classFileDecoration = new ClassFileDecoration(presentation);
-                    classFileDecoration.decorate(classTreeNode, fPresentationData);
-                }
-            });
+
+            PainPointPresentation presentation = PainPointPresentationFactory.creatPresentation(project, classTreeNode);
+            ClassFileDecoration classFileDecoration = new ClassFileDecoration(presentation);
+            classFileDecoration.decorate(classTreeNode, fPresentationData);
         }
     }
 

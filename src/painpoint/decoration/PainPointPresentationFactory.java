@@ -108,7 +108,6 @@ public class PainPointPresentationFactory {
                     String commentText = element.getText();
                     if(StringUtils.containsIgnoreCase(commentText, "TODO")) {
                         todoList.add(element.getText());
-                        System.out.println("\n\n\n" + todoList.size() + "________________________________________________"+element.getText());
                     }
                 }
 
