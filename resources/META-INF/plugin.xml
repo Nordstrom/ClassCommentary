@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>com.philipleder.plugin.painpoint</id>
   <name>PainPoints</name>
-  <version>1.17.8</version>
+  <version>1.17.9</version>
   <vendor email="phil@philipleder.com" url="http://philipleder.com">Phil Leder</vendor>
 
   <description><![CDATA[
@@ -9,6 +9,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      1.17.9 Hotfix.
       1.17.8 Very strict database retry, and now using invoke later on database queries.
       1.17.6 Figuring out how to change this when loading from an enterprise repo.
     ]]>
