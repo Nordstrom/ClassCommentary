@@ -21,7 +21,6 @@ public class PainPointDomain {
     private static final String FIELDS = "ID, CLASSID, USERNAME, THUMBSDOWN";
     private final Storage mStorage = ServiceManager.getService(Storage.class);
     private boolean mNetworkError = false;
-    private int mRetryCount = 0;
     private Map<Integer, PainPoint> mPainPointMapCache = new HashMap<Integer, PainPoint>();
 
     public PainPointDomain() {
@@ -29,20 +28,16 @@ public class PainPointDomain {
     }
 
     private Connection getConnection() {
-        if ((!mNetworkError || mRetryCount % 10 == 0) && mRetryCount < 100) {
-            try {
-                mRetryCount = 0;
-                JdbcConnectionPool cp = JdbcConnectionPool.
-                        create(mStorage.getH2Url(), "sa", "");
-                return cp.getConnection();
-            } catch (SQLException sqlEx) {
-                if (sqlEx.getErrorCode() == 1) {
-                    mNetworkError = true;
-                }
-                PluginManager.getLogger().warn("SQLException " + sqlEx.getMessage());
+        try {
+            JdbcConnectionPool cp = JdbcConnectionPool.
+                    create(mStorage.getH2Url(), "sa", "");
+            mNetworkError = false;
+            return cp.getConnection();
+        } catch (SQLException sqlEx) {
+            if (sqlEx.getErrorCode() == 1) {
+                mNetworkError = true;
             }
-        } else {
-            mRetryCount++;
+            PluginManager.getLogger().warn("SQLException " + sqlEx.getMessage());
         }
         return null;
     }
@@ -79,6 +74,10 @@ public class PainPointDomain {
     }
 
     private void createPainPointTable() {
+        if (mNetworkError) {
+            PluginManager.getLogger().debug("getPainPointMap  returning null.  Database may be down.");
+            return;
+        }
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -97,6 +96,12 @@ public class PainPointDomain {
     }
 
     public Map<Integer, PainPoint> getPainPointMap(boolean queryForData) throws SQLException {
+
+        if (mNetworkError) {
+            PluginManager.getLogger().debug("getPainPointMap  returning null.  Database may be down.");
+            return null;
+        }
+
         if (queryForData || mPainPointMapCache == null || mPainPointMapCache.isEmpty()) {
             Map<Integer, PainPoint> painPointMap = null;
             Connection conn = getConnection();
